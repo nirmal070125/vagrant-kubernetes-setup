@@ -67,8 +67,8 @@ coreos:
         ConditionFileIsExecutable=/opt/bin/kube-apiserver
         Description=Kubernetes API Server
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Wants=etcd.service
-        Wants=docker.service
+        Requires=etcd.service
+        Requires=docker.service
 
         [Service]
         ExecStart=/opt/bin/kube-apiserver \
@@ -84,19 +84,17 @@ coreos:
         WantedBy=multi-user.target
 
     - name: controller-manager.service
-      command: start
+      command: restart
       content: |
         [Unit]
-        After=etcd.service
-        After=docker.service
         ConditionFileIsExecutable=/opt/bin/kube-controller-manager
         Description=Kubernetes Controller Manager
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Wants=etcd.service
-        Wants=docker.service
+        After=apiserver.service
+        Requires=apiserver.service
 
         [Service]
-        ExecStart=/opt/bin/kube-controller-manager -master=127.0.0.1:8080
+        ExecStart=/opt/bin/kube-controller-manager -master=127.0.0.1:8080 -machines=%MINION_IP_ADDRS% -v 4
         Restart=always
         RestartSec=5
 
@@ -107,13 +105,11 @@ coreos:
       command: start
       content: |
         [Unit]
-        After=etcd.service
-        After=docker.service
         ConditionFileIsExecutable=/opt/bin/kube-scheduler
         Description=Kubernetes Scheduler
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Wants=etcd.service
-        Wants=docker.service
+        Requires=apiserver.service
+        After=apiserver.service
 
         [Service]
         ExecStart=/opt/bin/kube-scheduler -master=127.0.0.1:8080
@@ -132,8 +128,8 @@ coreos:
         ConditionFileIsExecutable=/opt/bin/kubelet
         Description=Kubernetes Kubelet
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Wants=etcd.service
-        Wants=docker.service
+        Requires=etcd.service
+        Requires=docker.service
 
         [Service]
         ExecStart=/opt/bin/kubelet \
@@ -156,8 +152,8 @@ coreos:
         ConditionFileIsExecutable=/opt/bin/kube-proxy
         Description=Kubernetes Proxy
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Wants=etcd.service
-        Wants=docker.service
+        Requires=etcd.service
+        Requires=docker.service
 
         [Service]
         ExecStart=/opt/bin/kube-proxy -etcd_servers=http://127.0.0.1:4001
