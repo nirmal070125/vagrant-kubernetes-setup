@@ -28,3 +28,5 @@ $ ./up.sh
 Kubernetes master node is capable of acting as a master/minion. In this mode, you can run the setup using only 2 Virtual machines which is convenient in many cases.
 
 Please use following Vagrant file, if you would like to create the 2-VM setup.
+
+https://github.com/nirmal070125/vagrant-kubernetes-setup/blob/master/2-vm-setup/Vagrantfile
